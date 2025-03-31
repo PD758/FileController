@@ -31,7 +31,7 @@ jobs:
         run: |
           Compress-Archive -Path x64/Release/FileControllerDriver/FileControllerDriver.sys, `
                                  x64/Release/FileControllerDriver/FileControllerDriver.inf, `
-                                 x64/Release/FileControllerDriver/FileControllerDriver.cab `
+                                 x64/Release/FileControllerDriver/FileControllerDriver.cat `
                            -DestinationPath x64/Release/FileControllerDriver.zip
 
       - name: Upload application
