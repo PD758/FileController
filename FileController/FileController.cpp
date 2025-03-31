@@ -49,19 +49,23 @@ UINT g_TimeoutDuration = 15000; // 15 seconds
 ULONG g_DefaultAction = RESPONSE_TYPE_ACCESS_DENIED;      // Deny by default
 /* Main */
 
-/*int WINAPI wWinMain(
+#if _DEBUG
+int main() {
+	g_hInstance = GetModuleHandle(nullptr);
+#else
+int WINAPI wWinMain(
 	_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR lpCmdLine,
-	_In_ int nCmdShow) 
+	_In_ int nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);*/
-int main() {
+	UNREFERENCED_PARAMETER(lpCmdLine);
+	g_hInstance = hInstance;
+#endif
+
+
 	LOG("Main start");
-
-	g_hInstance = GetModuleHandle(nullptr);//hInstance;
-
 	INITCOMMONCONTROLSEX iccex;
 	initCommonControls(&iccex);
 	LOG("initiated common controls");
