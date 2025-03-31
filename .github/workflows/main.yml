@@ -29,25 +29,25 @@ jobs:
 
       - name: Package driver files
         run: |
-          Compress-Archive -Path x64/FileControllerDriver/FileControllerDriver.sys, `
-                                 x64/FileControllerDriver/FileControllerDriver.inf, `
-                                 x64/FileControllerDriver/FileControllerDriver.cab `
-                          -DestinationPath x64/FileControllerDriver.zip
+          Compress-Archive -Path x64/Release/FileControllerDriver/FileControllerDriver.sys, `
+                                 x64/Release/FileControllerDriver/FileControllerDriver.inf, `
+                                 x64/Release/FileControllerDriver/FileControllerDriver.cab `
+                           -DestinationPath x64/Release/FileControllerDriver.zip
 
       - name: Upload application
         uses: actions/upload-artifact@v4
         with:
           name: FileController
-          path: x64/FileController.exe
+          path: x64/Release/FileController.exe
 
       - name: Upload driver package
         uses: actions/upload-artifact@v4
         with:
           name: FileControllerDriver
-          path: x64/FileControllerDriver.zip
+          path: x64/Release/FileControllerDriver.zip
 
       - name: Upload debug symbols
         uses: actions/upload-artifact@v4
         with:
           name: DebugSymbols
-          path: x64/FileController.pdb
+          path: x64/Release/FileController.pdb
