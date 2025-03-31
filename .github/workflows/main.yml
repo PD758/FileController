@@ -1,0 +1,56 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.3
+
+      - name: Install Windows SDK and WDK
+        run: |
+          choco install windows-sdk-10-version-1903-all
+          choco install windows-driver-kit
+
+      - name: Restore dependencies
+        run: msbuild your-solution.sln /t:Restore
+
+      - name: Build solution
+        run: msbuild your-solution.sln /p:Configuration=Release /p:Platform=x64
+
+      - name: Package driver files
+        run: |
+          Compress-Archive -Path x64/FileControllerDriver/FileControllerDriver.sys, `
+                                 x64/FileControllerDriver/FileControllerDriver.inf, `
+                                 x64/FileControllerDriver/FileControllerDriver.cab `
+                          -DestinationPath x64/FileControllerDriver.zip
+
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileController
+          path: x64/FileController.exe
+
+      - name: Upload driver package
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileControllerDriver
+          path: x64/FileControllerDriver.zip
+
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: DebugSymbols
+          path: x64/FileController.pdb
