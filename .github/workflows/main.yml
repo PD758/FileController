@@ -21,8 +21,8 @@ jobs:
 
       - name: Install Windows SDK and WDK
         run: |
-          choco install windows-sdk-10-version-1903-all
-          choco install windows-driver-kit
+          choco install windows-sdk-10-version-1903-all -y
+          choco install windowsdriverkit10 -y
 
       - name: Restore dependencies
         run: msbuild your-solution.sln /t:Restore
