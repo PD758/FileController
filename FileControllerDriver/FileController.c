@@ -1,4 +1,4 @@
-/*
+п»ї/*
 * 
 * github.com/PD758
 * All rights reserved. 2025.
@@ -11,17 +11,16 @@ ULONG_PTR OperationStatusCtx = 1;
 
 ULONG gTraceFlags = PTDBG_TRACE_ROUTINES + PTDBG_TRACE_OPERATION_STATUS;
 
-// Определение для коммуникации с пользовательским режимом
+// РљРѕРјРјСѓРЅРёРєР°С†РёСЏ СЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРј СЂРµР¶РёРјРѕРј
 PFLT_PORT gServerPort = NULL;
 PFLT_PORT gClientPort = NULL;
 
-// Глобальные списки защищенных файлов и доверенных программ
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ СЃРїРёСЃРєРё Р·Р°С‰РёС‰РµРЅРЅС‹С… С„Р°Р№Р»РѕРІ Рё РґРѕРІРµСЂРµРЅРЅС‹С… РїСЂРѕРіСЂР°РјРј
 LIST_ENTRY g_ProtectedFilesList;
 LIST_ENTRY g_TrustedProgramsList;
 FAST_MUTEX g_ListLock;
 
 
-// Операции, которые мы будем отслеживать
 const FLT_OPERATION_REGISTRATION Callbacks[] = {
     { IRP_MJ_CREATE,              0, FileControllerPreOperation, FileControllerPostOperation },
     { IRP_MJ_READ,                0, FileControllerPreOperation, FileControllerPostOperation },
@@ -30,7 +29,7 @@ const FLT_OPERATION_REGISTRATION Callbacks[] = {
     { IRP_MJ_OPERATION_END }
 };
 
-// Данные регистрации
+// Р РµРіРёСЃС‚СЂР°С†РёСЏ С„РёР»СЊС‚СЂР°
 const FLT_REGISTRATION FilterRegistration = {
     sizeof(FLT_REGISTRATION),           // Size
     FLT_REGISTRATION_VERSION,           // Version
@@ -54,21 +53,20 @@ NTSTATUS GetInstanceForVolume(
     NTSTATUS Status;
     PFLT_VOLUME Volume = NULL;
 
-    // Получаем PFLT_VOLUME по имени тома
+    // get PFLT_VOLUME by volume name
     Status = FltGetVolumeFromName(gFilterHandle, VolumeName, &Volume);
     if (!NT_SUCCESS(Status)) {
         return Status;
     }
 
-    // Получаем PFLT_INSTANCE для этого тома
+    // get PFLT_INSTANCE by PFLT_VOLUME
     Status = FltGetVolumeInstanceFromName(
-        gFilterHandle,   // Указатель на фильтр
-        Volume,          // Указатель на том
-        NULL,            // Имя экземпляра, NULL если не нужно
-        Instance         // Выходной параметр, где будет храниться PFLT_INSTANCE
+        gFilterHandle,
+        Volume,
+        NULL,
+        Instance
     );
 
-    // Освобождаем объект тома
     FltObjectDereference(Volume);
 
     return Status;
@@ -108,14 +106,14 @@ NTSTATUS FileExists(PCUNICODE_STRING NtFilePath) {
     FILE_NETWORK_OPEN_INFORMATION FileInfo;
     NTSTATUS Status;
 
-    // Initialize object attributes for the file path
+    // init object attributes for file path
     InitializeObjectAttributes(&ObjectAttributes,
         (PUNICODE_STRING)NtFilePath,
         OBJ_KERNEL_HANDLE | OBJ_CASE_INSENSITIVE,
         NULL,
         NULL);
 
-    // Call ZwQueryFullAttributesFile to retrieve the file's attributes
+    // get file attributes
     Status = ZwQueryFullAttributesFile(&ObjectAttributes, &FileInfo);
     return Status;
 }
@@ -262,7 +260,7 @@ BOOLEAN ContainsSubstringWcharArray(
 
     return FALSE;
 }
-// Точка входа драйвера
+// РўРѕС‡РєР° РІС…РѕРґР° РґСЂР°Р№РІРµСЂР°
 NTSTATUS DriverEntry(
     _In_ PDRIVER_OBJECT DriverObject,
     _In_ PUNICODE_STRING RegistryPath
@@ -315,7 +313,7 @@ NTSTATUS DriverEntry(
         return status;
     }
 
-    // Запуск фильтра
+    // Р—Р°РїСѓСЃРє С„РёР»СЊС‚СЂР°
     status = FltStartFiltering(gFilterHandle);
     if (!NT_SUCCESS(status)) {
         PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: FltStartFiltering failed with status 0x%x\n"), status);
@@ -327,7 +325,7 @@ NTSTATUS DriverEntry(
     return STATUS_SUCCESS;
 }
 
-// Выгрузка драйвера
+// Р’С‹РіСЂСѓР·РєР° РґСЂР°Р№РІРµСЂР°
 NTSTATUS FileControllerUnload(
     _In_ FLT_FILTER_UNLOAD_FLAGS Flags
 )
@@ -336,12 +334,12 @@ NTSTATUS FileControllerUnload(
 
     PT_DBG_PRINT(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: FileControllerUnload\n"));
 
-    // Закрытие порта коммуникации
+    // Р—Р°РєСЂС‹С‚РёРµ РїРѕСЂС‚Р° РєРѕРјРјСѓРЅРёРєР°С†РёРё
     if (gServerPort != NULL) {
         FltCloseCommunicationPort(gServerPort);
     }
 
-    // Освобождение списков файлов и программ
+    // РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ СЃРїРёСЃРєРѕРІ С„Р°Р№Р»РѕРІ Рё РїСЂРѕРіСЂР°РјРј
     PLIST_ENTRY entry;
     PPROTECTED_FILE protectedFile;
     PTRUSTED_PROGRAM trustedProgram;
@@ -364,13 +362,13 @@ NTSTATUS FileControllerUnload(
 
     ExReleaseFastMutex(&g_ListLock);
 
-    // Отмена регистрации фильтра
+    // РћС‚РјРµРЅР° СЂРµРіРёСЃС‚СЂР°С†РёРё С„РёР»СЊС‚СЂР°
     FltUnregisterFilter(gFilterHandle);
 
     return STATUS_SUCCESS;
 }
 
-// Настройка экземпляра
+// РќР°СЃС‚СЂРѕР№РєР° СЌРєР·РµРјРїР»СЏСЂР°
 NTSTATUS FileControllerInstanceSetup(
     _In_ PCFLT_RELATED_OBJECTS FltObjects,
     _In_ FLT_INSTANCE_SETUP_FLAGS Flags,
@@ -388,7 +386,7 @@ NTSTATUS FileControllerInstanceSetup(
     return STATUS_SUCCESS;
 }
 
-// Отключение экземпляра
+// РћС‚РєР»СЋС‡РµРЅРёРµ СЌРєР·РµРјРїР»СЏСЂР°
 VOID FileControllerInstanceTeardownStart(
     _In_ PCFLT_RELATED_OBJECTS FltObjects,
     _In_ FLT_INSTANCE_TEARDOWN_FLAGS Flags
@@ -400,7 +398,7 @@ VOID FileControllerInstanceTeardownStart(
     //PT_DBG_PRINT(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: FileControllerInstanceTeardownStart\n"));
 }
 
-// Завершение отключения экземпляра
+// Р—Р°РІРµСЂС€РµРЅРёРµ РѕС‚РєР»СЋС‡РµРЅРёСЏ СЌРєР·РµРјРїР»СЏСЂР°
 VOID FileControllerInstanceTeardownComplete(
     _In_ PCFLT_RELATED_OBJECTS FltObjects,
     _In_ FLT_INSTANCE_TEARDOWN_FLAGS Flags
@@ -412,7 +410,7 @@ VOID FileControllerInstanceTeardownComplete(
     //PT_DBG_PRINT(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: FileControllerInstanceTeardownComplete\n"));
 }
 
-// Запрос на отключение экземпляра
+// Р—Р°РїСЂРѕСЃ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ СЌРєР·РµРјРїР»СЏСЂР°
 NTSTATUS FileControllerInstanceQueryTeardown(
     _In_ PCFLT_RELATED_OBJECTS FltObjects,
     _In_ FLT_INSTANCE_QUERY_TEARDOWN_FLAGS Flags
@@ -426,7 +424,7 @@ NTSTATUS FileControllerInstanceQueryTeardown(
     return STATUS_SUCCESS;
 }
 
-// Обработка операций до выполнения
+// РћР±СЂР°Р±РѕС‚РєР° РѕРїРµСЂР°С†РёР№ РґРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ
 FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
     _Inout_ PFLT_CALLBACK_DATA Data,
     _In_ PCFLT_RELATED_OBJECTS FltObjects,
@@ -445,7 +443,7 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
 
     UNREFERENCED_PARAMETER(CompletionContext);
 
-    // Проверка только для операций чтения, записи и удаления
+    // РџСЂРѕРІРµСЂРєР° С‚РѕР»СЊРєРѕ РґР»СЏ РѕРїРµСЂР°С†РёР№ С‡С‚РµРЅРёСЏ, Р·Р°РїРёСЃРё Рё СѓРґР°Р»РµРЅРёСЏ
     switch (Data->Iopb->MajorFunction) {
     case IRP_MJ_READ:
         requestType = FILESYSTEM_READ;
@@ -463,12 +461,11 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
         return FLT_PREOP_SUCCESS_NO_CALLBACK;
     }
 
-    // Если нет подходящей операции, пропускаем
     if (requestType == 0) {
         return FLT_PREOP_SUCCESS_NO_CALLBACK;
     }
 
-    // Получаем имя файла
+    // РџРѕР»СѓС‡Р°РµРј РёРјСЏ С„Р°Р№Р»Р°
     status = FltGetFileNameInformation(
         Data,
         FLT_FILE_NAME_NORMALIZED | FLT_FILE_NAME_QUERY_DEFAULT,
@@ -488,22 +485,17 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
     }
 
 
-    // Проверяем, является ли файл защищенным
     isFileProtected = IsFileProtected(&nameInfo->Name);
 
-    // Если файл защищен, проверяем программу
     if (isFileProtected) {
         PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: got file request to %wZ\n"), nameInfo->Name);
-        // Получаем текущий процесс
         process = IoThreadToProcess(Data->Thread);
         
         if (NT_SUCCESS(GetProcessFullImagePath(process, &processName)) && processName != NULL) {
 
             PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: request from %wZ\n"), *processName);
-            // Проверяем, является ли программа доверенной
             isTrusted = IsProgramTrusted(processName);
 
-            // Если программа не доверенная, спрашиваем пользователя
             if (!isTrusted) {
                 status = AskUserForPermission(
                     requestType,
@@ -516,14 +508,14 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
                     PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: user answered: %d, "),
                         reply.ReplyType);
                     switch (reply.ReplyType) {
-                    case RESPONSE_TYPE_ACCESS_GRANTED: // Разрешить
+                    case RESPONSE_TYPE_ACCESS_GRANTED: // Р Р°Р·СЂРµС€РёС‚СЊ
                         DPRINT("granted access\n");
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
                         ObDereferenceObject(process);
                         return FLT_PREOP_SUCCESS_NO_CALLBACK;
 
-                    case RESPONSE_TYPE_ACCESS_DENIED: // Отклонить
+                    case RESPONSE_TYPE_ACCESS_DENIED: // РћС‚РєР»РѕРЅРёС‚СЊ
                         DPRINT("denied access\n");
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
@@ -531,9 +523,8 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
                         Data->IoStatus.Status = STATUS_ACCESS_DENIED;
                         return FLT_PREOP_COMPLETE;
 
-                    case RESPONSE_TYPE_ADD_TRUSTED: // Добавить в доверенные
+                    case RESPONSE_TYPE_ADD_TRUSTED: // Р”РѕР±Р°РІРёС‚СЊ РІ РґРѕРІРµСЂРµРЅРЅС‹Рµ
                         DPRINT("TRUSTED\n");
-                        // Добавляем программу в список доверенных
                         ; PTRUSTED_PROGRAM trustedProgram = ExAllocatePool2(POOL_FLAG_PAGED, sizeof(TRUSTED_PROGRAM), 'TSRT'); // tag-(reversed)TSRT-TRST-TrustedProg
                         if (trustedProgram != NULL) {
                             trustedProgram->ProgramName.Buffer = ExAllocatePool2(POOL_FLAG_PAGED, processName->Length, 'NPRT'); // tag-(reversed)NPRT-TRPN-TrustedProgName
@@ -555,7 +546,7 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
                         ObDereferenceObject(process);
                         return FLT_PREOP_SUCCESS_NO_CALLBACK;
 
-                    case RESPONSE_TYPE_BLACKLIST: // Запретить программу
+                    case RESPONSE_TYPE_BLACKLIST: // Р—Р°РїСЂРµС‚РёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ
                         DPRINT("BLACKLISTED\n");
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
@@ -577,7 +568,7 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
     return FLT_PREOP_SUCCESS_NO_CALLBACK;
 }
 
-// Обработка операций после выполнения
+// РћР±СЂР°Р±РѕС‚РєР° РѕРїРµСЂР°С†РёР№ РїРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ
 FLT_POSTOP_CALLBACK_STATUS FileControllerPostOperation(
     _Inout_ PFLT_CALLBACK_DATA Data,
     _In_ PCFLT_RELATED_OBJECTS FltObjects,
@@ -593,7 +584,7 @@ FLT_POSTOP_CALLBACK_STATUS FileControllerPostOperation(
     return FLT_POSTOP_FINISHED_PROCESSING;
 }
 
-// Проверка, является ли файл защищенным
+// РџСЂРѕРІРµСЂРєР°, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С„Р°Р№Р» Р·Р°С‰РёС‰РµРЅРЅС‹Рј
 BOOLEAN IsFileProtected(
     _In_ PUNICODE_STRING FileName
 )
@@ -633,7 +624,7 @@ BOOLEAN IsFileProtected(
     return isProtected;
 }
 
-// Проверка, является ли программа доверенной
+// РџСЂРѕРІРµСЂРєР°, СЏРІР»СЏРµС‚СЃСЏ Р»Рё РїСЂРѕРіСЂР°РјРјР° РґРѕРІРµСЂРµРЅРЅРѕР№
 BOOLEAN IsProgramTrusted(
     _In_ PUNICODE_STRING ProgramName
 )
@@ -657,7 +648,7 @@ BOOLEAN IsProgramTrusted(
     return isTrusted;
 }
 
-// Запрос у пользователя разрешения
+// Р—Р°РїСЂРѕСЃ Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЂР°Р·СЂРµС€РµРЅРёСЏ
 NTSTATUS AskUserForPermission(
     _In_ ULONG RequestType,
     _In_ PUNICODE_STRING FileName,
@@ -678,14 +669,14 @@ NTSTATUS AskUserForPermission(
 #endif
     PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES,
         "FileControllerDriver: asking for permisison to %d for %wZ (rq from %wZ)\n", RequestType, FileName, ProgramName);
-    // Если клиент не подключен, запрещаем доступ
+    // Р•СЃР»Рё РєР»РёРµРЅС‚ РЅРµ РїРѕРґРєР»СЋС‡РµРЅ, Р·Р°РїСЂРµС‰Р°РµРј РґРѕСЃС‚СѓРї
     if (gClientPort == NULL) {
         DPRINT("FileControllerDriver: userApp not connected, rejecting request\n");
-        Reply->ReplyType = DEFAULT_RESPONSE_TYPE; // Отклонить
+        Reply->ReplyType = DEFAULT_RESPONSE_TYPE; // РћС‚РєР»РѕРЅРёС‚СЊ
         return STATUS_SUCCESS;
     }
 
-    // Заполняем запрос
+    // Р—Р°РїРѕР»РЅСЏРµРј Р·Р°РїСЂРѕСЃ
     request_ff.RequestType = RequestType;
     RtlZeroMemory(request_ff.FileName, sizeof(request_ff.FileName));
     RtlZeroMemory(request_ff.ProgramName, sizeof(request_ff.ProgramName));
@@ -704,7 +695,7 @@ NTSTATUS AskUserForPermission(
         RtlCopyMemory(request_ff.ProgramName, ProgramName->Buffer, 255 * sizeof(WCHAR));
     }
     DPRINT("FileControllerDriver: Got request to handle, sending to port\n");
-    // Отправляем запрос пользовательскому режиму
+    // РћС‚РїСЂР°РІР»СЏРµРј Р·Р°РїСЂРѕСЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРјСѓ СЂРµР¶РёРјСѓ
     replyLength = sizeof(ACCESS_REPLY);
 
     status = FltSendMessage(
@@ -723,13 +714,13 @@ NTSTATUS AskUserForPermission(
             PT_DBG_PRINT(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: status response timeout, using default REJECT action\n"));
         else
             PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: status reponse non-success: %d\n"), status);
-        Reply->ReplyType = DEFAULT_RESPONSE_TYPE; // Отклонить по умолчанию при ошибке
+        Reply->ReplyType = DEFAULT_RESPONSE_TYPE; // РћС‚РєР»РѕРЅРёС‚СЊ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РїСЂРё РѕС€РёР±РєРµ
     }
 
     return status;
 }
 
-// Обработка подключения клиента
+// РћР±СЂР°Р±РѕС‚РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР»РёРµРЅС‚Р°
 NTSTATUS FileControllerConnect(
     _In_ PFLT_PORT ClientPort,
     _In_ PVOID ServerPortCookie,
@@ -749,7 +740,7 @@ NTSTATUS FileControllerConnect(
     return STATUS_SUCCESS;
 }
 
-// Обработка отключения клиента
+// РћР±СЂР°Р±РѕС‚РєР° РѕС‚РєР»СЋС‡РµРЅРёСЏ РєР»РёРµРЅС‚Р°
 VOID FileControllerDisconnect(
     _In_opt_ PVOID ConnectionCookie
 )
@@ -762,7 +753,7 @@ VOID FileControllerDisconnect(
     gClientPort = NULL;
 }
 
-// Обработка сообщений от клиента
+// РћР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ РєР»РёРµРЅС‚Р°
 NTSTATUS FileControllerMessage(
     _In_ PVOID ConnectionCookie,
     _In_reads_bytes_opt_(InputBufferSize) PVOID InputBuffer,
@@ -809,7 +800,7 @@ NTSTATUS FileControllerMessage(
 
     *ReturnOutputBufferSize = 0;
 
-    // Декодирование входящего сообщения
+    // Р”РµРєРѕРґРёСЂРѕРІР°РЅРёРµ РІС…РѕРґСЏС‰РµРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ
     FILTER_INCOMING_MESSAGE_STRUCT incomingMsg = *(PFILTER_INCOMING_MESSAGE_STRUCT)InputBuffer;
     ULONG messageType = incomingMsg.messageType;
     ULONG responseType;
@@ -817,7 +808,7 @@ NTSTATUS FileControllerMessage(
     //UNICODE_STRING volume;
 
     switch (messageType) {
-    case MESSAGE_TYPE_ADD_FILE: // Добавить файл в защищенные
+    case MESSAGE_TYPE_ADD_FILE: // Р”РѕР±Р°РІРёС‚СЊ С„Р°Р№Р» РІ Р·Р°С‰РёС‰РµРЅРЅС‹Рµ
         fileName = (PUNICODE_STRING)((PUCHAR)InputBuffer + FLT_INC_MSG_STRUCT_SIZE);
         PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: got request add file %wZ\n"), fileName);
 
@@ -870,7 +861,7 @@ NTSTATUS FileControllerMessage(
         *ReturnOutputBufferSize = FLT_INC_RPL_STRUCT_SIZE;
         break;
 
-    case MESSAGE_TYPE_REMOVE_FILE: // Удалить файл из защищенных
+    case MESSAGE_TYPE_REMOVE_FILE: // РЈРґР°Р»РёС‚СЊ С„Р°Р№Р» РёР· Р·Р°С‰РёС‰РµРЅРЅС‹С…
         fileName = (PUNICODE_STRING)((PUCHAR)InputBuffer + FLT_INC_MSG_STRUCT_SIZE);
         PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: got request rm file %wZ\n"), fileName);
         found = FALSE;
@@ -900,7 +891,7 @@ NTSTATUS FileControllerMessage(
         *ReturnOutputBufferSize = FLT_INC_RPL_STRUCT_SIZE;
         break;
 
-    case MESSAGE_TYPE_ADD_PROGRAM: // Добавить программу в доверенные
+    case MESSAGE_TYPE_ADD_PROGRAM: // Р”РѕР±Р°РІРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РІ РґРѕРІРµСЂРµРЅРЅС‹Рµ
         programName = (PUNICODE_STRING)((PUCHAR)InputBuffer + FLT_INC_MSG_STRUCT_SIZE);
         PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: got request add prog %wZ\n"), programName);
 
@@ -930,7 +921,7 @@ NTSTATUS FileControllerMessage(
         *ReturnOutputBufferSize = FLT_INC_RPL_STRUCT_SIZE;
         break;
 
-    case MESSAGE_TYPE_REMOVE_PROGRAM: // Удалить программу из доверенных
+    case MESSAGE_TYPE_REMOVE_PROGRAM: // РЈРґР°Р»РёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РёР· РґРѕРІРµСЂРµРЅРЅС‹С…
         programName = (PUNICODE_STRING)((PUCHAR)InputBuffer + FLT_INC_MSG_STRUCT_SIZE);
         PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES, ("FileControllerDriver: got request rm prog %wZ\n"), programName);
         found = FALSE;

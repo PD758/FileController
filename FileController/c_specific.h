@@ -1,4 +1,4 @@
-/*
+﻿/*
 *
 * github.com/PD758
 * All rights reserved. 2025.

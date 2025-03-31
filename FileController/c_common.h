@@ -1,4 +1,4 @@
-/*
+п»ї/*
 *
 * github.com/PD758
 * All rights reserved. 2025.
@@ -39,9 +39,9 @@ typedef struct _Settings {
 } Settings, *PSettings;
 
 typedef struct _UNICODE_STRING {
-    USHORT Length;        // Текущая длина строки в байтах (без учета завершающего \0)
-    USHORT MaximumLength; // Выделенный размер буфера в байтах
-    PWSTR  Buffer;        // Указатель на буфер строки (широкие символы)
+    USHORT Length;        // РўРµРєСѓС‰Р°СЏ РґР»РёРЅР° СЃС‚СЂРѕРєРё РІ Р±Р°Р№С‚Р°С… (Р±РµР· СѓС‡РµС‚Р° Р·Р°РІРµСЂС€Р°СЋС‰РµРіРѕ \0)
+    USHORT MaximumLength; // Р’С‹РґРµР»РµРЅРЅС‹Р№ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° РІ Р±Р°Р№С‚Р°С…
+    PWSTR  Buffer;        // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р±СѓС„РµСЂ СЃС‚СЂРѕРєРё (С€РёСЂРѕРєРёРµ СЃРёРјРІРѕР»С‹)
 } UNICODE_STRING, * PUNICODE_STRING;
 
 /* Functions declarations */

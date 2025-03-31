@@ -1,4 +1,4 @@
-/*
+п»ї/*
 *
 * github.com/PD758
 * All rights reserved. 2025.
@@ -31,7 +31,7 @@ BOOL InitializeDriver() {
     );
 
     if (FAILED(hr)) {
-        g_Port = INVALID_HANDLE_VALUE; // Устанавливаем в INVALID_HANDLE_VALUE при ошибке
+        g_Port = INVALID_HANDLE_VALUE; // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ INVALID_HANDLE_VALUE РїСЂРё РѕС€РёР±РєРµ
     }
     return (g_Port != INVALID_HANDLE_VALUE);
 }
@@ -60,7 +60,7 @@ BOOL SendMessageToDriver(ULONG messageType, const wchar_t* data) {
         return FALSE;
     }
 
-    // Заполняем сообщение
+    // Р—Р°РїРѕР»РЅСЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ
     (*(PFILTER_INCOMING_MESSAGE_STRUCT)message).Header.ReplyLength = FLT_INC_RPL_STRUCT_SIZE;
     (*(PFILTER_INCOMING_MESSAGE_STRUCT)message).messageType = messageType;
 
@@ -70,7 +70,7 @@ BOOL SendMessageToDriver(ULONG messageType, const wchar_t* data) {
     unicodeString->Buffer = (PWCH)(message + FLT_INC_MSG_STRUCT_SIZE + sizeof(UNICODE_STRING));
     memcpy(unicodeString->Buffer, data, wcslen(data) * sizeof(WCHAR));
 
-    // Отправляем сообщение
+    // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ
     ULONG replySize;
     FILTER_INCOMING_REPLY_STRUCT reply;
 

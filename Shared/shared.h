@@ -4,6 +4,7 @@
 * All rights reserved. 2025.
 *
 */
+#pragma once
 
 // Structures for I/O Control
 __declspec(align(8))

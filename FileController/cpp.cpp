@@ -1,4 +1,4 @@
-/*
+п»ї/*
 *
 * github.com/PD758
 * All rights reserved. 2025.
@@ -308,7 +308,7 @@ INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                 if (AddTrustedProgram(ConvertToNtPath(programPath))) {
                     LVITEM lvi = { 0 };
                     lvi.mask = LVIF_TEXT;
-                    lvi.iItem = ListView_GetItemCount(g_hTrustedList); // Вставляем в конец списка
+                    lvi.iItem = ListView_GetItemCount(g_hTrustedList); // Р’СЃС‚Р°РІР»СЏРµРј РІ РєРѕРЅРµС† СЃРїРёСЃРєР°
                     lvi.iSubItem = 0;
                     lvi.pszText = (LPWSTR)programPath.c_str();
                     ListView_InsertItem(g_hTrustedList, &lvi);
@@ -406,8 +406,8 @@ INT_PTR CALLBACK RequestDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
         // Init progress bar
         LOG("RequestDlgProc: init progressbar");
         hwndProgressBar = GetDlgItem(hDlg, IDC_PROGRESS);
-        SendMessage(hwndProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, g_TimeoutDuration / 1000)); // 0 - 15 сек
-        SendMessage(hwndProgressBar, PBM_SETSTEP, 1, 0); // Шаг 1 (по секунде)
+        SendMessage(hwndProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, g_TimeoutDuration / 1000)); // 0 - 15 СЃРµРє
+        SendMessage(hwndProgressBar, PBM_SETSTEP, 1, 0); // РЁР°Рі 1 (РїРѕ СЃРµРєСѓРЅРґРµ)
 
         timeLeft = g_TimeoutDuration;
         timerId = SetTimer(hDlg, 1, 1000, (TIMERPROC)nullptr); // 1 sec interval
@@ -660,7 +660,7 @@ DWORD WINAPI MessageThread(LPVOID lpParam) {
         FILTER_MESSAGE_ACCESS_REQUEST request = { 0 };
         UCHAR buffer[buffer_size];
 
-        // Блокирующий вызов получения сообщения от фильтра.
+        // Р‘Р»РѕРєРёСЂСѓСЋС‰РёР№ РІС‹Р·РѕРІ РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕРѕР±С‰РµРЅРёСЏ РѕС‚ С„РёР»СЊС‚СЂР°.
         HRESULT hr = FilterGetMessage(GetPort(), (PFILTER_MESSAGE_HEADER)buffer,
             buffer_size, NULL);
 
