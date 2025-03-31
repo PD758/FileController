@@ -27,13 +27,6 @@ jobs:
       - name: Build solution
         run: msbuild FileController.sln /p:Configuration=Release /p:Platform=x64
 
-      - name: Package driver files
-        run: |
-          Compress-Archive -Path x64/Release/FileControllerDriver/FileControllerDriver.sys, `
-                                 x64/Release/FileControllerDriver/FileControllerDriver.inf, `
-                                 x64/Release/FileControllerDriver/FileControllerDriver.cat `
-                           -DestinationPath x64/Release/FileControllerDriver.zip
-
       - name: Upload application
         uses: actions/upload-artifact@v4
         with:
@@ -44,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FileControllerDriver
-          path: x64/Release/FileControllerDriver.zip
+          path: x64/Release/FileControllerDriver/*
 
       - name: Upload debug symbols
         uses: actions/upload-artifact@v4
