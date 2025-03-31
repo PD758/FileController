@@ -1,0 +1,63 @@
+; filecontrollerdriver.inf
+;
+; github.com/PD758
+; All rights reserved. 2025.
+;
+; Installation file for the FileController filter driver.
+;
+
+[Version]
+Signature   = "$Windows NT$"
+Class       = AntiVirus                         ; This is determined by the DriverType value in the WDF coinstaller.
+ClassGuid   = {b1d1a169-c54f-4379-81db-bee7d88d7454} ;This is determined by the DriverType value in the WDF coinstaller.
+CatalogFile = FileControllerDriver.cat
+Provider    = %ManufacturerName%
+DriverVer   = 26/03/2025,1.0.0.0
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 12                   ;%windir%\system32\drivers
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+FileControllerDriver.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+
+[DefaultInstall.NTamd64]
+CopyFiles = Drivers_Dir
+
+[DefaultInstall.NTamd64.Services]
+AddService = FileControllerDriver,2,ServiceInstall
+
+[Drivers_Dir]
+FileControllerDriver.sys
+
+; -------------- FileController driver install sections
+[ServiceInstall]
+DisplayName    = %FileControllerDriver.SvcDisplayName%
+ServiceType    = 2                  ; SERVICE_FILE_SYSTEM_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+Dependencies   = "FltMgr"
+LoadOrderGroup = "FSFilter Anti-Virus"
+ServiceBinary  = %12%\FileControllerDriver.sys
+AddReg		   = InstanceInstall
+
+[InstanceInstall]
+HKR,"Instances","DefaultInstance",0x00000000,"FileControllerInstance"
+HKR,"Instances\FileControllerInstance","Altitude",0x00000000,"320010"
+HKR,"Instances\FileControllerInstance","Flags",0x00010001,0
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "PD758"
+DiskName         = "FileController Installation Disk"
+FileControllerDriver.SvcDisplayName = "Internal FileController Driver"
+FileControllerDriver.SvcName = "FileControllerDriver"
+REG_DWORD        = 0x00010001

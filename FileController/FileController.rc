@@ -1,0 +1,162 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Русский (Россия) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN DIALOGEX 0, 0, 500, 300
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "File Protection"
+FONT 9, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PROTECTED_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,7,486,119
+    PUSHBUTTON      "Add File",IDC_ADD_FILE,7,132,75,14
+    PUSHBUTTON      "Remove File",IDC_REMOVE_FILE,88,132,75,14
+    CONTROL         "",IDC_TRUSTED_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,7,152,486,119
+    PUSHBUTTON      "Add Program",IDC_ADD_PROGRAM,7,277,75,14
+    PUSHBUTTON      "Remove Program",IDC_REMOVE_PROGRAM,88,277,75,14
+    PUSHBUTTON      "Settings",IDC_SETTINGS,424,277,69,14
+END
+
+IDD_REQUEST DIALOGEX 0, 0, 279, 171
+STYLE DS_SYSMODAL | DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_TOPMOST
+CAPTION "Access Request"
+FONT 9, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "File Name:",IDC_STATIC,7,7,45,8
+    EDITTEXT        IDC_FILE_NAME,61,7,218,14,ES_READONLY | NOT WS_BORDER
+    LTEXT           "Program Name:",IDC_STATIC,7,28,55,8
+    EDITTEXT        IDC_PROGRAM_NAME,71,28,208,14,ES_READONLY | NOT WS_BORDER
+    LTEXT           "Operation Type:",IDC_STATIC,7,49,55,8
+    EDITTEXT        IDC_OPERATION_TYPE,71,49,208,14,ES_READONLY | NOT WS_BORDER
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,13,70,266,15
+    PUSHBUTTON      "Allow",ID_ALLOW,7,91,60,21
+    PUSHBUTTON      "Deny",ID_DENY,73,91,60,21
+    PUSHBUTTON      "Add to Trusted",ID_ADD_TRUSTED,139,91,60,21
+    PUSHBUTTON      "Block Program",ID_BLOCK_PROGRAM,205,91,60,21
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,112,157,50,14
+END
+
+IDD_SETTINGS DIALOGEX 0, 0, 220, 120
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Settings"
+FONT 9, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Timeout (seconds):",IDC_STATIC,7,7,70,8
+    EDITTEXT        IDC_TIMEOUT,80,7,50,14,ES_NUMBER
+    GROUPBOX        "Default Action",IDC_STATIC,7,30,206,50
+    CONTROL         "Allow",IDC_ALLOW_DEFAULT,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,15,45,50,14
+    CONTROL         "Deny",IDC_DENY_DEFAULT,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,80,45,50,14
+    DEFPUSHBUTTON   "OK",IDOK,44,92,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,126,92,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_MAIN, DIALOG
+    BEGIN
+    END
+
+    IDD_REQUEST, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_REQUEST AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MAIN AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Русский (Россия) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
