@@ -1,9 +1,3 @@
-/*
-*
-* github.com/PD758
-* All rights reserved. 2025.
-*
-*/
 //{{NO_DEPENDENCIES}}
 // Включаемый файл, созданный в Microsoft Visual C++.
 // Используется FileController.rc
