@@ -141,7 +141,7 @@ BOOL BrowseForProgram(HWND hWnd, std::wstring& programPath) {
     ofn.hwndOwner = hWnd;
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
-    ofn.lpstrFilter = L"Executable Files (*.exe;*.com;*.bat)\0*.exe;*.com;*.bat\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFilter = L"Executable Files (*.exe;*.com;*.bat;*.vbs;*.cmd)\0*.exe;*.com;*.bat;*.vbs;*.cmd\0All Files (*.*)\0*.*\0";
     ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 
     if (GetOpenFileNameW(&ofn) == TRUE) {

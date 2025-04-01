@@ -66,19 +66,10 @@ struct DriverConnProtector {
     void disarm();
 };
 
-/* C-Functions declarations */
-
-/*extern "C" {
-    BOOL InitializeDriver();
-    void CleanupDriver();
-    BOOL SendMessageToDriver(ULONG messageType, const wchar_t* data);
-}*/
-
 /* Global variables */
 
 extern std::vector<ProtectedFile> g_ProtectedFiles;
 extern std::vector<TrustedProgram> g_TrustedPrograms;
-//extern std::mutex g_Mutex;
 extern CriticalSection g_SMutex;
 extern CriticalSection g_RQMutex;
 extern CriticalConditionVariable g_RQ_CV;
@@ -109,7 +100,7 @@ DWORD WINAPI RequestQHandler(LPVOID lpParam);
 // System UI interactions
 // Show system file picker request to any file
 BOOL BrowseForFile(HWND hWnd, std::wstring& filePath);
-// Show system file picker request to .exe/.bat/.com file
+// Show system file picker request to .exe/.bat/.com/.vbs/.cmd file
 BOOL BrowseForProgram(HWND hWnd, std::wstring& programPath);
 
 // Convert "C:\Folder\File.ext" path to "\Device\HarddiskVolumeX\Folder\File.ext"

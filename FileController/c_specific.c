@@ -49,10 +49,9 @@ BOOL SendMessageToDriver(ULONG messageType, const wchar_t* data) {
         return FALSE;
     }
 
-    // Message buffer
+    // Рассчитываем размер и выделяем буфер
     ULONG messageSize = FLT_INC_MSG_STRUCT_SIZE + sizeof(UNICODE_STRING) + wcslen(data) * sizeof(WCHAR);
 
-    //std::unique_ptr<UCHAR[]> message(new UCHAR[messageSize]); // Use unique_ptr
     UCHAR* message = (UCHAR*)calloc(messageSize, sizeof(UCHAR));
 
     if (!message) {
