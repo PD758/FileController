@@ -614,6 +614,20 @@ void ProcessAccessRequest(const FILTER_MESSAGE_ACCESS_REQUEST& request) noexcept
 
     if (SUCCEEDED(hr)) {
         LOG("ProcessAccessRequest: request reply success");
+        if (replyType == RESPONSE_TYPE_ADD_TRUSTED) {
+            LOG("ProcessAccessRequest: adding trusted program");
+            TrustedProgram program;
+            program.path = request.Data.ProgramName;
+            program.path = ConvertToDosPath(program.path);
+            CriticalLockGuard lock(g_SMutex);
+            g_TrustedPrograms.push_back(program); 
+            LVITEM lvi = { 0 };
+            lvi.mask = LVIF_TEXT;
+            lvi.iItem = ListView_GetItemCount(g_hTrustedList);
+            lvi.iSubItem = 0;
+            lvi.pszText = (LPWSTR)(program.path.c_str());
+            ListView_InsertItem(g_hTrustedList, &lvi);
+        }
     }
     else {
         LOG("ProcessAccessRequest: request reply failed");

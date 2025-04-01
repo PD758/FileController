@@ -668,7 +668,7 @@ NTSTATUS AskUserForPermission(
     ptimeout = NULL;
 #endif
     PT_DBG_PRINTF(PTDBG_TRACE_ROUTINES,
-        "FileControllerDriver: asking for permisison to %d for %wZ (rq from %wZ)\n", RequestType, FileName, ProgramName);
+        "FileControllerDriver: asking for permisison to %d for %wZ from %wZ\n", RequestType, FileName, ProgramName);
     // Если клиент не подключен, запрещаем доступ
     if (gClientPort == NULL) {
         DPRINT("FileControllerDriver: userApp not connected, rejecting request\n");
