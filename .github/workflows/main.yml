@@ -74,6 +74,6 @@ jobs:
           files: |
             x64/Release/FileController.exe
             x64/Release/FileController.pdb.zip
-            x64/Release/FileControllerDriver.zip*
+            x64/Release/FileControllerDriver.zip
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
