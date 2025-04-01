@@ -44,3 +44,24 @@ jobs:
         with:
           name: DebugSymbols
           path: x64/Release/FileController.pdb
+
+      - name: Get commit hash and timestamp
+        id: version_info
+        run: |
+          echo "timestamp=$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> $env:GITHUB_ENV
+          echo "commit_hash=${{ github.sha }}" >> $env:GITHUB_ENV
+
+      - name: Create or update pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest
+          body: "Timestamp: ${{ env.timestamp }}\nCommit: ${{ env.commit_hash }}"
+          draft: false
+          prerelease: true
+          files: |
+            x64/Release/FileController.exe
+            x64/Release/FileController.pdb
+            x64/Release/FileControllerDriver/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
