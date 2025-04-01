@@ -39,11 +39,23 @@ jobs:
           name: FileControllerDriver
           path: x64/Release/FileControllerDriver/*
 
-      - name: Upload debug symbols
+      - name: Upload debugging symbols
         uses: actions/upload-artifact@v4
         with:
           name: DebugSymbols
           path: x64/Release/FileController.pdb
+
+      - name: Package driver files
+        run: |
+          Compress-Archive -Path x64/Release/FileControllerDriver/FileControllerDriver.sys, `
+                                 x64/Release/FileControllerDriver/FileControllerDriver.inf, `
+                                 x64/Release/FileControllerDriver/FileControllerDriver.cat `
+                           -DestinationPath x64/Release/FileControllerDriver.zip
+      
+      - name: Package debugging symbols
+        run: |
+          Compress-Archive -Path x64/Release/FileController.pdb `
+                           -DestinationPath x64/Release/FileController.pdb.zip
 
       - name: Get commit hash and timestamp
         id: version_info
@@ -61,7 +73,7 @@ jobs:
           prerelease: true
           files: |
             x64/Release/FileController.exe
-            x64/Release/FileController.pdb
-            x64/Release/FileControllerDriver/*
+            x64/Release/FileController.pdb.zip
+            x64/Release/FileControllerDriver.zip*
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
