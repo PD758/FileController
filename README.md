@@ -3,26 +3,26 @@
 
 
 ## Описание
-**FileController** — это инструмент для контроля доступа к файлам с использованием драйвера-фильтра файловой системы Windows.
-Проект состоит из двух частей:
+**FileController** — это решение для контроля доступа к файлам с использованием драйвера-фильтра файловой системы Windows.
+Решение состоит из двух частей:
 - **FileController.exe** — графическое приложение для управления доступом к файлам.
 - **FileControllerDriver** — драйвер-фильтр файловой системы (KMDF Minifilter).
 
 ## Установка из релиза
 
 - Перед установкой отключите Secure Boot в BIOS/UEFI и выполните команду `bcdedit /set testsigning on`. Это необходимо для установки драйвера, подписанного тестовой подписью.
-- Скачайте драйвер из одного из доступных релизов: <br>
+- Скачайте графическое приложение и драйвер из одного из доступных релизов: <br>
  [![Stable Release](https://img.shields.io/badge/Release-Stable-green)](https://github.com/PD758/FileController/releases/tag/stable) <br>
 [![Unstable Release](https://img.shields.io/badge/Pre--Release-Unstable-orange)](https://github.com/PD758/FileController/releases/tag/latest) 
 - Разархивируйте FileControllerDriver.zip
 - Установите драйвер, нажав ПКМ на *FileControllerDriver.inf* и выбрав "установить", либо можете использовать команду `pnputil /add-driver FileControllerDriver.inf /install`
 - Для запуска драйвера выполните команду `sc start FileControllerDriver` из командной строки с правами администратора, либо перезапустите компьютер
-- Для запуска графического интерфейса запустите файл *FileController.exe*
+- Для запуска графического интерфейса запустите файл *FileController.exe* от имени администратора
 
 ## Сборка из исходных файлов
 
 ### Требования
-- Visual Studio 2022
+- Visual Studio 2022 или Visual Studio Build Tools
 - Windows SDK и Windows Driver Kit (WDK)
 - Windows 10/11 (x64)
 
@@ -32,7 +32,7 @@ choco install windows-sdk-10-version-1903-all windowsdriverkit10 -y
 ```
 
 ### Компиляция
-Собрать проект можно с помощью MSBuild:
+Собрать проект можно с помощью MSBuild, либо с помощью интерфейса Visual Studio:
 ```sh
 msbuild FileController.sln /p:Configuration=Release /p:Platform=x64
 ```
