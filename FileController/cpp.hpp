@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <unordered_set>
 #include <queue>
 #include <atomic>
 #include <memory>
@@ -70,6 +71,8 @@ struct DriverConnProtector {
 
 extern std::vector<ProtectedFile> g_ProtectedFiles;
 extern std::vector<TrustedProgram> g_TrustedPrograms;
+extern std::unordered_set<std::wstring> g_BlockedPrograms;
+extern CriticalSection g_BlockedMutex;
 extern CriticalSection g_SMutex;
 extern CriticalSection g_RQMutex;
 extern CriticalConditionVariable g_RQ_CV;
@@ -89,6 +92,9 @@ BOOL AddProtectedFile(const std::wstring& filePath);
 BOOL RemoveProtectedFile(const std::wstring& filePath);
 BOOL AddTrustedProgram(const std::wstring& programPath);
 BOOL RemoveTrustedProgram(const std::wstring& programPath);
+
+BOOL IsProgramBlocked(const std::wstring& programPath);
+BOOL AddBlockedProgram(const std::wstring& programPath);
 
 // Dialog callbacks
 INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);

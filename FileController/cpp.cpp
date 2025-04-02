@@ -54,7 +54,7 @@ CriticalConditionVariable::CriticalConditionVariable() : pCs(new CriticalSection
     InitializeConditionVariable(&this->cv);
 }
 CriticalConditionVariable::CriticalConditionVariable(CriticalSection& externalCs) : pCs(&externalCs) {
-	InitializeConditionVariable(&this->cv);
+    InitializeConditionVariable(&this->cv);
 }
 void CriticalConditionVariable::wait(DWORD timeout) {
     SleepConditionVariableCS(&this->cv, this->pCs->_raw(), timeout);
@@ -110,7 +110,7 @@ std::wstring ConvertToDosPath(const std::wstring& ntPath) noexcept {
         std::wstring device(deviceName);
         //WLogf(L"ConvertToDosPath: checking %s\n\n", device.c_str());
         if (starts_with(ntPath, device))
-            return std::wstring(drive) + ntPath.substr(device.size()+1);
+            return std::wstring(drive) + ntPath.substr(device.size() + 1);
     }
     return ntPath;
 }
@@ -266,7 +266,8 @@ INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                     lvi.iSubItem = 0;
                     lvi.pszText = (LPWSTR)filePath.c_str();
                     ListView_InsertItem(g_hProtectedList, &lvi);
-                } else {
+                }
+                else {
                     MessageBox(hDlg, L"Failed to add file to protected list", L"Error", MB_OK | MB_ICONERROR);
                 }
             }
@@ -290,7 +291,8 @@ INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 
                 if (RemoveProtectedFile(ConvertToNtPath(filePath))) {
                     ListView_DeleteItem(g_hProtectedList, iItem);
-                } else {
+                }
+                else {
                     MessageBox(hDlg, L"Failed to remove file from protected list", L"Error", MB_OK | MB_ICONERROR);
                 }
             }
@@ -336,7 +338,8 @@ INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 
                 if (RemoveTrustedProgram(ConvertToNtPath(programPath))) {
                     ListView_DeleteItem(g_hTrustedList, iItem);
-                } else {
+                }
+                else {
                     MessageBox(hDlg, L"Failed to remove program from trusted list", L"Error", MB_OK | MB_ICONERROR);
                 }
             }
@@ -482,7 +485,7 @@ INT_PTR CALLBACK RequestDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 
 INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
-    case WM_INITDIALOG: 
+    case WM_INITDIALOG:
     {
         LOG("SettingsDlgProc: init");
         // Init controls with current settings
@@ -494,7 +497,7 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
     }
     case WM_COMMAND: {
         switch (LOWORD(wParam)) {
-        case IDOK: 
+        case IDOK:
         {
             LOG("SettingsDlgProc: OK clicked");
             BOOL success;
@@ -507,7 +510,8 @@ INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
             if (IsDlgButtonChecked(hDlg, IDC_ALLOW_DEFAULT) == BST_CHECKED) {
                 g_DefaultAction = 1;
-            } else {
+            }
+            else {
                 g_DefaultAction = 2;
             }
 
@@ -600,15 +604,27 @@ void ProcessAccessRequest(const FILTER_MESSAGE_ACCESS_REQUEST& request) noexcept
         return;
     }
 
-    int replyType = (int)DialogBoxParamW(g_hInstance, MAKEINTRESOURCEW(IDD_REQUEST),
-        g_hMainWnd, RequestDlgProc, (LPARAM)&request);
-    FLogf("ProcessAccessRequest: Dialog result: %d\n", replyType);
+    TrustedProgram program;
+    program.path = request.Data.ProgramName;
+    program.path = ConvertToDosPath(program.path);
+
+    int replyType;
+
+    if (IsProgramBlocked(program.path)) {
+        replyType = RESPONSE_TYPE_ACCESS_DENIED;
+        LOG("ProcessAccessRequest: denied access by blacklist");
+    }
+    else {
+        replyType = (int)DialogBoxParamW(g_hInstance, MAKEINTRESOURCEW(IDD_REQUEST),
+            g_hMainWnd, RequestDlgProc, (LPARAM)&request);
+        FLogf("ProcessAccessRequest: Dialog result: %d\n", replyType);
+    }
 
     FILTER_REPLY_ACCESS_RESPONSE reply = { 0 };
     reply.Header.Status = 0;
     reply.Header.MessageId = request.Header.MessageId;
     reply.Data.ReplyType = static_cast<ULONG>(replyType);
-    
+
     LOG("ProcessAccessRequest: replying with response...");
     HRESULT hr = FilterReplyMessage(GetPort(), (PFILTER_REPLY_HEADER)&reply, FLT_RPL_ACCESS_RESPONSE_SIZE);
 
@@ -616,17 +632,18 @@ void ProcessAccessRequest(const FILTER_MESSAGE_ACCESS_REQUEST& request) noexcept
         LOG("ProcessAccessRequest: request reply success");
         if (replyType == RESPONSE_TYPE_ADD_TRUSTED) {
             LOG("ProcessAccessRequest: adding trusted program");
-            TrustedProgram program;
-            program.path = request.Data.ProgramName;
-            program.path = ConvertToDosPath(program.path);
             CriticalLockGuard lock(g_SMutex);
-            g_TrustedPrograms.push_back(program); 
+            g_TrustedPrograms.push_back(program);
             LVITEM lvi = { 0 };
             lvi.mask = LVIF_TEXT;
             lvi.iItem = ListView_GetItemCount(g_hTrustedList);
             lvi.iSubItem = 0;
             lvi.pszText = (LPWSTR)(program.path.c_str());
             ListView_InsertItem(g_hTrustedList, &lvi);
+        }
+        else if (replyType == RESPONSE_TYPE_BLACKLIST) {
+            CriticalLockGuard lock(g_BlockedMutex);
+            g_BlockedPrograms.insert(program.path);
         }
     }
     else {
@@ -697,5 +714,11 @@ DWORD WINAPI MessageThread(LPVOID lpParam) {
         LOG("msgThread: notified worker to handle request");
     }
     return 0;
+}
+
+
+BOOL IsProgramBlocked(const std::wstring& programPath) {
+    CriticalLockGuard lock(g_BlockedMutex);
+    return g_BlockedPrograms.find(programPath) != g_BlockedPrograms.end();
 }
 

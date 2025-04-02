@@ -20,6 +20,7 @@
 #include <thread>
 #include <atomic>
 #include <memory>
+#include <unordered_set>
 #include <queue>
 
 #include "cpp.hpp"
@@ -35,7 +36,8 @@
 
 std::vector<ProtectedFile> g_ProtectedFiles;
 std::vector<TrustedProgram> g_TrustedPrograms;
-//std::mutex g_Mutex;
+std::unordered_set<std::wstring> g_BlockedPrograms;
+CriticalSection g_BlockedMutex;
 CriticalSection g_SMutex;
 CriticalSection g_RQMutex; // request queue mutex;
 CriticalConditionVariable g_RQ_CV(g_RQMutex); // request queue CV
