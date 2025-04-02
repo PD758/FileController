@@ -94,7 +94,6 @@ BOOL AddTrustedProgram(const std::wstring& programPath);
 BOOL RemoveTrustedProgram(const std::wstring& programPath);
 
 BOOL IsProgramBlocked(const std::wstring& programPath);
-BOOL AddBlockedProgram(const std::wstring& programPath);
 
 // Dialog callbacks
 INT_PTR CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
