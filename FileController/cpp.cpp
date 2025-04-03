@@ -1,9 +1,11 @@
-﻿/*
+/*
 *
 * github.com/PD758
 * All rights reserved. 2025.
 *
 */
+#include "cpp.hpp"
+
 #include <windows.h>
 #include <fltuser.h>
 #include <commctrl.h>
@@ -11,8 +13,6 @@
 #include <shlwapi.h>
 
 #include "c_common.h"
-#include "cpp.hpp"
-
 #include "resource.h"
 
 template<typename CharT>
@@ -50,10 +50,10 @@ CriticalLockGuard::CriticalLockGuard(CriticalSection& crt) : sec(crt) {
 CriticalLockGuard::~CriticalLockGuard() {
     this->sec.release();
 }
-CriticalConditionVariable::CriticalConditionVariable() : pCs(new CriticalSection()) {
+CriticalConditionVariable::CriticalConditionVariable() : pCs(new CriticalSection()), self_owned(true) {
     InitializeConditionVariable(&this->cv);
 }
-CriticalConditionVariable::CriticalConditionVariable(CriticalSection& externalCs) : pCs(&externalCs) {
+CriticalConditionVariable::CriticalConditionVariable(CriticalSection& externalCs) : pCs(&externalCs), self_owned(false) {
     InitializeConditionVariable(&this->cv);
 }
 void CriticalConditionVariable::wait(DWORD timeout) {
@@ -64,6 +64,12 @@ void CriticalConditionVariable::notify_one() {
 }
 void CriticalConditionVariable::notify_all() {
     WakeAllConditionVariable(&this->cv);
+}
+
+CriticalConditionVariable::~CriticalConditionVariable() {
+    if (pCs != nullptr && this->self_owned) {
+        delete pCs;
+    }
 }
 
 DriverConnProtector::~DriverConnProtector() {
@@ -721,4 +727,3 @@ BOOL IsProgramBlocked(const std::wstring& programPath) {
     CriticalLockGuard lock(g_BlockedMutex);
     return g_BlockedPrograms.find(programPath) != g_BlockedPrograms.end();
 }
-

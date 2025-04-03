@@ -1,4 +1,4 @@
-﻿/*
+/*
 *
 * github.com/PD758
 * All rights reserved. 2025.
@@ -17,6 +17,7 @@
 #include <queue>
 #include <atomic>
 #include <memory>
+#include <algorithm>
 
 #include "c_common.h"
 
@@ -50,10 +51,11 @@ public:
 class CriticalConditionVariable {
     CONDITION_VARIABLE cv;
     CriticalSection* pCs;
+    bool self_owned = false;
 public:
     CriticalConditionVariable();
     CriticalConditionVariable(CriticalSection&);
-    ~CriticalConditionVariable() {}
+    ~CriticalConditionVariable();
     void wait(DWORD timeout = INFINITY);
     void notify_one();
     void notify_all();
@@ -118,4 +120,3 @@ std::wstring ConvertToDosPath(const std::wstring& filePath) noexcept;
 BOOL LoadSettings(PSettings settings);
 // save to %appdata%\\FileController\\settings.ini
 BOOL SaveSettings(PSettings settings);
-
