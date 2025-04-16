@@ -16,8 +16,8 @@
 
 #define FCONTROLLER_PORT L"\\FileControllerPort"
 
+#if _DEBUG
 #define LOG(...) {puts(__VA_ARGS__);fflush(stdout);}
-//#define LOG(...) printf("%s\n", __VA_ARGS__);fflush(stdout)
 #define LOG_BYTES(pointer, size)                         \
     do {                                                 \
         unsigned char* _ptr = (unsigned char*)(pointer); \
@@ -26,6 +26,14 @@
         }                                                \
         printf("\n");                                    \
     } while (0)
+
+#else
+
+#define LOG(...) ((void)0)
+#define LOG_BYTES(pointer, size) ((void)0)
+
+#endif
+
 
 /* Structs definitions */
 

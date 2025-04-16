@@ -512,14 +512,12 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
                         DPRINT("granted access\n");
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
-                        ObDereferenceObject(process);
                         return FLT_PREOP_SUCCESS_NO_CALLBACK;
 
                     case RESPONSE_TYPE_ACCESS_DENIED: // Отклонить
                         DPRINT("denied access\n");
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
-                        ObDereferenceObject(process);
                         Data->IoStatus.Status = STATUS_ACCESS_DENIED;
                         return FLT_PREOP_COMPLETE;
 
@@ -543,14 +541,12 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
                         }
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
-                        ObDereferenceObject(process);
                         return FLT_PREOP_SUCCESS_NO_CALLBACK;
 
                     case RESPONSE_TYPE_BLACKLIST: // Запретить программу
                         DPRINT("BLACKLISTED\n");
                         FltReleaseFileNameInformation(nameInfo);
                         ExFreePool(processName);
-                        ObDereferenceObject(process);
                         Data->IoStatus.Status = STATUS_ACCESS_DENIED;
                         return FLT_PREOP_COMPLETE;
                     default:
@@ -561,7 +557,6 @@ FLT_PREOP_CALLBACK_STATUS FileControllerPreOperation(
             }
             ExFreePool2(processName, 'proc', NULL, 0);
         }
-        ObDereferenceObject(process);
     }
 
     FltReleaseFileNameInformation(nameInfo);
